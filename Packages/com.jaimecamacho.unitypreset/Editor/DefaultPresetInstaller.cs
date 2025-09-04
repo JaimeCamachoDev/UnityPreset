@@ -20,7 +20,6 @@ internal static class DefaultPresetInstaller
         RegisterTexturePresets();
         RegisterModelPresets();
     }
-
     static void RegisterTexturePresets()
     {
         AddPreset<TextureImporter>("Packages/com.jaimecamacho.unitypreset/Presets/Importers/Textures/TI_Albedo.preset", "");
