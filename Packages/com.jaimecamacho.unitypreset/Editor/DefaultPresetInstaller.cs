@@ -1,3 +1,6 @@
+using System;
+using System.Collections;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.Presets;
 
@@ -30,11 +33,30 @@ internal static class DefaultPresetInstaller
             return;
 
         var type = typeof(T);
-        foreach (var existing in PresetManager.GetDefaultPresetsForType(type))
+        var presetManagerType = typeof(Preset).Assembly.GetType("UnityEditor.PresetManager");
+        if (presetManagerType == null)
+            return;
+
+        var getDefaults = presetManagerType.GetMethod("GetDefaultPresetsForType", BindingFlags.Static | BindingFlags.Public);
+        var addDefault = presetManagerType.GetMethod("AddDefaultPreset", BindingFlags.Static | BindingFlags.Public);
+        if (getDefaults == null || addDefault == null)
+            return;
+
+        var defaults = (IEnumerable)getDefaults.Invoke(null, new object[] { type });
+        foreach (var entry in defaults)
         {
-            if (existing.preset == preset && existing.filter == filter)
+            var entryType = entry.GetType();
+            var presetField = entryType.GetField("preset");
+            var filterField = entryType.GetField("filter");
+            if (presetField == null || filterField == null)
+                continue;
+
+            var existingPreset = presetField.GetValue(entry) as Preset;
+            var existingFilter = filterField.GetValue(entry) as string;
+            if (existingPreset == preset && existingFilter == filter)
                 return;
         }
-        PresetManager.AddDefaultPreset(type, filter, preset);
+
+        addDefault.Invoke(null, new object[] { type, filter, preset });
     }
 }
