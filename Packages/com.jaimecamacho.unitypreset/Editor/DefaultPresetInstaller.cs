@@ -60,7 +60,6 @@ internal static class DefaultPresetInstaller
             Debug.LogWarning("[UnityPreset] PresetManager type not found");
             return;
         }
-
         var binding = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
         var getDefaults = presetManagerType.GetMethod("GetDefaultPresetsForType", binding);
         var addDefault = presetManagerType.GetMethod("AddDefaultPreset", binding);
