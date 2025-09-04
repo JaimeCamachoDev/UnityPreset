@@ -60,10 +60,10 @@ internal static class DefaultPresetInstaller
             Debug.LogWarning("[UnityPreset] PresetManager type not found");
             return;
         }
-
-        var getDefaults = presetManagerType.GetMethod("GetDefaultPresetsForType", BindingFlags.Static | BindingFlags.Public);
-        var addDefault = presetManagerType.GetMethod("AddDefaultPreset", BindingFlags.Static | BindingFlags.Public);
-        var removeDefault = presetManagerType.GetMethod("RemoveDefaultPreset", BindingFlags.Static | BindingFlags.Public);
+        var binding = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+        var getDefaults = presetManagerType.GetMethod("GetDefaultPresetsForType", binding);
+        var addDefault = presetManagerType.GetMethod("AddDefaultPreset", binding);
+        var removeDefault = presetManagerType.GetMethod("RemoveDefaultPreset", binding);
         if (getDefaults == null || addDefault == null || removeDefault == null)
         {
             Debug.LogWarning("[UnityPreset] PresetManager methods not found");
@@ -74,8 +74,9 @@ internal static class DefaultPresetInstaller
         foreach (var entry in defaults)
         {
             var entryType = entry.GetType();
-            var presetField = entryType.GetField("preset");
-            var filterField = entryType.GetField("filter");
+            var fieldBinding = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            var presetField = entryType.GetField("preset", fieldBinding);
+            var filterField = entryType.GetField("filter", fieldBinding);
             if (presetField == null || filterField == null)
                 continue;
 
