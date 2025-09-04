@@ -3,6 +3,8 @@ using System.Collections;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.Presets;
+using UnityEngine;
+
 
 [InitializeOnLoad]
 internal static class DefaultPresetInstaller
