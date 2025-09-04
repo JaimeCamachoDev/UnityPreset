@@ -1,6 +1,5 @@
 using System;
-using System.Collections;
-using System.Reflection;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Presets;
 using UnityEngine;
@@ -54,35 +53,15 @@ internal static class DefaultPresetInstaller
         }
 
         var type = typeof(T);
-        var presetManagerType = typeof(Preset).Assembly.GetType("UnityEditor.Presets.PresetManager");
-        if (presetManagerType == null)
-        {
-            Debug.LogWarning("[UnityPreset] PresetManager type not found");
-            return;
-        }
-        var binding = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
-        var getDefaults = presetManagerType.GetMethod("GetDefaultPresetsForType", binding);
-        var addDefault = presetManagerType.GetMethod("AddDefaultPreset", binding);
-        var removeDefault = presetManagerType.GetMethod("RemoveDefaultPreset", binding);
-        if (getDefaults == null || addDefault == null || removeDefault == null)
-        {
-            Debug.LogWarning("[UnityPreset] PresetManager methods not found");
-            return;
-        }
+        var presetType = new PresetType(type);
+        var defaults = new List<DefaultPreset>(Preset.GetDefaultPresetsForType(presetType));
 
-        var defaults = (IEnumerable)getDefaults.Invoke(null, new object[] { type });
-        foreach (var entry in defaults)
+        var index = defaults.FindIndex(d => d.filter == filter);
+        if (index >= 0)
         {
-            var entryType = entry.GetType();
-            var fieldBinding = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-            var presetField = entryType.GetField("preset", fieldBinding);
-            var filterField = entryType.GetField("filter", fieldBinding);
-            if (presetField == null || filterField == null)
-                continue;
+            var existing = defaults[index];
+            if (existing.preset == preset)
 
-            var existingPreset = presetField.GetValue(entry) as Preset;
-            var existingFilter = filterField.GetValue(entry) as string;
-            if (existingFilter == filter)
             {
                 if (existingPreset == preset)
                 {
@@ -93,9 +72,13 @@ internal static class DefaultPresetInstaller
                 removeDefault.Invoke(null, new object[] { type, existingFilter, existingPreset });
                 Debug.Log($"[UnityPreset] Removed preset {existingPreset.name} for {type.Name} with filter '{existingFilter}'");
             }
+
+            defaults.RemoveAt(index);
+            Debug.Log($"[UnityPreset] Removed preset {existing.preset.name} for {type.Name} with filter '{existing.filter}'");
         }
 
-        addDefault.Invoke(null, new object[] { type, filter, preset });
+        defaults.Add(new DefaultPreset(filter, preset));
+        Preset.SetDefaultPresetsForType(presetType, defaults.ToArray());
         Debug.Log($"[UnityPreset] Registered preset {preset.name} for {type.Name} with filter '{filter}'");
     }
 }
