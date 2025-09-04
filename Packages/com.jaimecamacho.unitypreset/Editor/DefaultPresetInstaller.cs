@@ -1,6 +1,5 @@
 using System;
-using System.Collections;
-using System.Reflection;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Presets;
 using UnityEngine;
@@ -26,15 +25,22 @@ internal static class DefaultPresetInstaller
   
     static void RegisterTexturePresets()
     {
-        AddPreset<TextureImporter>("Packages/com.jaimecamacho.unitypreset/Presets/Importers/Textures/TI_Albedo.preset", "");
-        AddPreset<TextureImporter>("Packages/com.jaimecamacho.unitypreset/Presets/Importers/Textures/TI_Normal.preset", "name:*_N*");
-        AddPreset<TextureImporter>("Packages/com.jaimecamacho.unitypreset/Presets/Importers/Textures/TI_Lightmap.preset", "path:*/Lightmaps/*");
+        AddPreset<TextureImporter>(
+            "Packages/com.jaimecamacho.unitypreset/Presets/Importers/Textures/VZ_Textures.preset",
+            "glob:\"2-Art/1-3D/**/*\"");
+        AddPreset<TextureImporter>(
+            "Packages/com.jaimecamacho.unitypreset/Presets/Importers/Textures/VZ_Normal.preset",
+            "glob:\"*_Normal.*\"");
     }
 
     static void RegisterModelPresets()
     {
-        AddPreset<ModelImporter>("Packages/com.jaimecamacho.unitypreset/Presets/Importers/Models/MI_FBX_Static.preset", "");
-        AddPreset<ModelImporter>("Packages/com.jaimecamacho.unitypreset/Presets/Importers/Models/MI_FBX_Animated.preset", "label:animated");
+        AddPreset<ModelImporter>(
+            "Packages/com.jaimecamacho.unitypreset/Presets/Importers/Models/VZ_FBX_Static.preset",
+            "glob:\"2-Art/1-3D/**/*\"");
+        AddPreset<ModelImporter>(
+            "Packages/com.jaimecamacho.unitypreset/Presets/Importers/Models/VZ_FBX_Animated.preset",
+            "glob:\"2-Art/1-3D/**/*\"");
     }
 
     static void AddPreset<T>(string presetPath, string filter) where T : AssetImporter
@@ -46,41 +52,26 @@ internal static class DefaultPresetInstaller
             return;
         }
 
-        var type = typeof(T);
-        var presetManagerType = typeof(Preset).Assembly.GetType("UnityEditor.Presets.PresetManager");
-        if (presetManagerType == null)
-        {
-            Debug.LogWarning("[UnityPreset] PresetManager type not found");
-            return;
-        }
+        var importerType = typeof(T);
+        var presetType = new PresetType(importerType);
+        var defaults = new List<DefaultPreset>(Preset.GetDefaultPresetsForType(presetType));
 
-        var getDefaults = presetManagerType.GetMethod("GetDefaultPresetsForType", BindingFlags.Static | BindingFlags.Public);
-        var addDefault = presetManagerType.GetMethod("AddDefaultPreset", BindingFlags.Static | BindingFlags.Public);
-        if (getDefaults == null || addDefault == null)
+        var index = defaults.FindIndex(d => d.filter == filter);
+        if (index >= 0)
         {
-            Debug.LogWarning("[UnityPreset] PresetManager methods not found");
-            return;
-        }
-
-        var defaults = (IEnumerable)getDefaults.Invoke(null, new object[] { type });
-        foreach (var entry in defaults)
-        {
-            var entryType = entry.GetType();
-            var presetField = entryType.GetField("preset");
-            var filterField = entryType.GetField("filter");
-            if (presetField == null || filterField == null)
-                continue;
-
-            var existingPreset = presetField.GetValue(entry) as Preset;
-            var existingFilter = filterField.GetValue(entry) as string;
-            if (existingPreset == preset && existingFilter == filter)
+            var existing = defaults[index];
+            if (existing.preset == preset)
             {
-                Debug.Log($"[UnityPreset] Preset {preset.name} already registered for {type.Name} with filter '{filter}'");
+                Debug.Log($"[UnityPreset] Preset {preset.name} already registered for {importerType.Name} with filter '{filter}'");
                 return;
             }
+
+            defaults.RemoveAt(index);
+            Debug.Log($"[UnityPreset] Removed preset {existing.preset.name} for {importerType.Name} with filter '{existing.filter}'");
         }
 
-        addDefault.Invoke(null, new object[] { type, filter, preset });
-        Debug.Log($"[UnityPreset] Registered preset {preset.name} for {type.Name} with filter '{filter}'");
+        defaults.Add(new DefaultPreset(filter, preset));
+        Preset.SetDefaultPresetsForType(presetType, defaults.ToArray());
+        Debug.Log($"[UnityPreset] Registered preset {preset.name} for {importerType.Name} with filter '{filter}'");
     }
 }
