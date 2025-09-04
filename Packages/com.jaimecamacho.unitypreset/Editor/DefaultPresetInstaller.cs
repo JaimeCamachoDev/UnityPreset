@@ -51,11 +51,10 @@ internal static class DefaultPresetInstaller
             Debug.LogWarning($"[UnityPreset] Preset not found at {presetPath}");
             return;
         }
+
         var importerType = typeof(T);
-        var presetType = new PresetType(importerType);
-        var defaults = new List<DefaultPreset>(Preset.GetDefaultPresetsForType(presetType));
-        var importerType = typeof(T);
-        var presetType = PresetType.GetPresetTypeFromType(importerType);
+        // Resolve the PresetType from the importer type using Preset's helper
+        var presetType = Preset.GetPresetTypeFromType(importerType);
         var defaults = new List<DefaultPreset>(Preset.GetDefaultPresetsForType(presetType));
         var index = defaults.FindIndex(d => d.filter == filter);
         if (index >= 0)
