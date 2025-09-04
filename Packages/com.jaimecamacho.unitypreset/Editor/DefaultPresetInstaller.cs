@@ -26,15 +26,22 @@ internal static class DefaultPresetInstaller
   
     static void RegisterTexturePresets()
     {
-        AddPreset<TextureImporter>("Packages/com.jaimecamacho.unitypreset/Presets/Importers/Textures/TI_Albedo.preset", "");
-        AddPreset<TextureImporter>("Packages/com.jaimecamacho.unitypreset/Presets/Importers/Textures/TI_Normal.preset", "name:*_N*");
-        AddPreset<TextureImporter>("Packages/com.jaimecamacho.unitypreset/Presets/Importers/Textures/TI_Lightmap.preset", "path:*/Lightmaps/*");
+        AddPreset<TextureImporter>(
+            "Packages/com.jaimecamacho.unitypreset/Presets/Importers/Textures/VZ_Textures.preset",
+            "glob:\"2-Art/1-3D/**/*\"");
+        AddPreset<TextureImporter>(
+            "Packages/com.jaimecamacho.unitypreset/Presets/Importers/Textures/VZ_Normal.preset",
+            "glob:\"*_Normal.*\"");
     }
 
     static void RegisterModelPresets()
     {
-        AddPreset<ModelImporter>("Packages/com.jaimecamacho.unitypreset/Presets/Importers/Models/MI_FBX_Static.preset", "");
-        AddPreset<ModelImporter>("Packages/com.jaimecamacho.unitypreset/Presets/Importers/Models/MI_FBX_Animated.preset", "label:animated");
+        AddPreset<ModelImporter>(
+            "Packages/com.jaimecamacho.unitypreset/Presets/Importers/Models/VZ_FBX_Static.preset",
+            "glob:\"2-Art/1-3D/**/*\"");
+        AddPreset<ModelImporter>(
+            "Packages/com.jaimecamacho.unitypreset/Presets/Importers/Models/VZ_FBX_Animated.preset",
+            "glob:\"2-Art/1-3D/**/*\"");
     }
 
     static void AddPreset<T>(string presetPath, string filter) where T : AssetImporter
@@ -54,9 +61,11 @@ internal static class DefaultPresetInstaller
             return;
         }
 
-        var getDefaults = presetManagerType.GetMethod("GetDefaultPresetsForType", BindingFlags.Static | BindingFlags.Public);
-        var addDefault = presetManagerType.GetMethod("AddDefaultPreset", BindingFlags.Static | BindingFlags.Public);
-        if (getDefaults == null || addDefault == null)
+        var binding = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+        var getDefaults = presetManagerType.GetMethod("GetDefaultPresetsForType", binding);
+        var addDefault = presetManagerType.GetMethod("AddDefaultPreset", binding);
+        var removeDefault = presetManagerType.GetMethod("RemoveDefaultPreset", binding);
+        if (getDefaults == null || addDefault == null || removeDefault == null)
         {
             Debug.LogWarning("[UnityPreset] PresetManager methods not found");
             return;
@@ -66,17 +75,24 @@ internal static class DefaultPresetInstaller
         foreach (var entry in defaults)
         {
             var entryType = entry.GetType();
-            var presetField = entryType.GetField("preset");
-            var filterField = entryType.GetField("filter");
+            var fieldBinding = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            var presetField = entryType.GetField("preset", fieldBinding);
+            var filterField = entryType.GetField("filter", fieldBinding);
             if (presetField == null || filterField == null)
                 continue;
 
             var existingPreset = presetField.GetValue(entry) as Preset;
             var existingFilter = filterField.GetValue(entry) as string;
-            if (existingPreset == preset && existingFilter == filter)
+            if (existingFilter == filter)
             {
-                Debug.Log($"[UnityPreset] Preset {preset.name} already registered for {type.Name} with filter '{filter}'");
-                return;
+                if (existingPreset == preset)
+                {
+                    Debug.Log($"[UnityPreset] Preset {preset.name} already registered for {type.Name} with filter '{filter}'");
+                    return;
+                }
+
+                removeDefault.Invoke(null, new object[] { type, existingFilter, existingPreset });
+                Debug.Log($"[UnityPreset] Removed preset {existingPreset.name} for {type.Name} with filter '{existingFilter}'");
             }
         }
 
