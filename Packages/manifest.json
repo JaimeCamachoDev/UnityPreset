@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "com.jaimecamacho.packagecreator": "1.0.2",
+    "com.jaimecamacho.unityfolders": "1.0.4",
     "com.unity.render-pipelines.universal": "17.0.4"
   },
   "scopedRegistries": [
@@ -19,4 +21,3 @@
     }
   ]
 }
-

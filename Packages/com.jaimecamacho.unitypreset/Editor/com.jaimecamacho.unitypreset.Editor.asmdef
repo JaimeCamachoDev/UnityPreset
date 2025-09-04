@@ -1,0 +1,5 @@
+{
+  "name": "com.jaimecamacho.unitypreset.Editor",
+  "references": ["com.jaimecamacho.unitypreset.Runtime"],
+  "includePlatforms": ["Editor"]
+}

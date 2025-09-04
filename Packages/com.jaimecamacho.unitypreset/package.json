@@ -1,0 +1,13 @@
+{
+  "author": "Jaime Camacho",
+  "displayName": "UnityPreset",
+  "keywords": [
+    "unity"
+  ],
+  "license": "MIT",
+  "name": "com.jaimecamacho.unitypreset",
+  "unity": "6000.0",
+  "unityRelease": "0f1",
+  "version": "1.0.0",
+  "description": "Creador de Presets"
+}
