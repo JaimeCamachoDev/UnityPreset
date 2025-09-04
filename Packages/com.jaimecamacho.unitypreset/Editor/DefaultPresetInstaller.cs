@@ -61,8 +61,14 @@ internal static class DefaultPresetInstaller
             var existing = defaults[index];
             if (existing.preset == preset)
             {
-                Debug.Log($"[UnityPreset] Preset {preset.name} already registered for {type.Name} with filter '{filter}'");
-                return;
+                if (existingPreset == preset)
+                {
+                    Debug.Log($"[UnityPreset] Preset {preset.name} already registered for {type.Name} with filter '{filter}'");
+                    return;
+                }
+
+                removeDefault.Invoke(null, new object[] { type, existingFilter, existingPreset });
+                Debug.Log($"[UnityPreset] Removed preset {existingPreset.name} for {type.Name} with filter '{existingFilter}'");
             }
 
             defaults.RemoveAt(index);
