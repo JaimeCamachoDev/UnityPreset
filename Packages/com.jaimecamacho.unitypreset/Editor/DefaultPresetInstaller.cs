@@ -51,9 +51,9 @@ internal static class DefaultPresetInstaller
             Debug.LogWarning($"[UnityPreset] Preset not found at {presetPath}");
             return;
         }
-
-        var type = typeof(T);
-        var defaults = new List<DefaultPreset>(Preset.GetDefaultPresetsForType(type));
+        var importerType = typeof(T);
+        var presetType = new PresetType(importerType);
+        var defaults = new List<DefaultPreset>(Preset.GetDefaultPresetsForType(presetType));
 
         var index = defaults.FindIndex(d => d.filter == filter);
         if (index >= 0)
@@ -61,22 +61,16 @@ internal static class DefaultPresetInstaller
             var existing = defaults[index];
             if (existing.preset == preset)
             {
-                if (existingPreset == preset)
-                {
-                    Debug.Log($"[UnityPreset] Preset {preset.name} already registered for {type.Name} with filter '{filter}'");
-                    return;
-                }
-
-                removeDefault.Invoke(null, new object[] { type, existingFilter, existingPreset });
-                Debug.Log($"[UnityPreset] Removed preset {existingPreset.name} for {type.Name} with filter '{existingFilter}'");
+                Debug.Log($"[UnityPreset] Preset {preset.name} already registered for {importerType.Name} with filter '{filter}'");
+                return;
             }
 
             defaults.RemoveAt(index);
-            Debug.Log($"[UnityPreset] Removed preset {existing.preset.name} for {type.Name} with filter '{existing.filter}'");
+            Debug.Log($"[UnityPreset] Removed preset {existing.preset.name} for {importerType.Name} with filter '{existing.filter}'");
         }
 
         defaults.Add(new DefaultPreset(filter, preset));
-        Preset.SetDefaultPresetsForType(type, defaults.ToArray());
-        Debug.Log($"[UnityPreset] Registered preset {preset.name} for {type.Name} with filter '{filter}'");
+        Preset.SetDefaultPresetsForType(presetType, defaults.ToArray());
+        Debug.Log($"[UnityPreset] Registered preset {preset.name} for {importerType.Name} with filter '{filter}'");
     }
 }
