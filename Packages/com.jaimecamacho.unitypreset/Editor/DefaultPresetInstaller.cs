@@ -53,15 +53,13 @@ internal static class DefaultPresetInstaller
         }
 
         var type = typeof(T);
-        var presetType = new PresetType(type);
-        var defaults = new List<DefaultPreset>(Preset.GetDefaultPresetsForType(presetType));
+        var defaults = new List<DefaultPreset>(Preset.GetDefaultPresetsForType(type));
 
         var index = defaults.FindIndex(d => d.filter == filter);
         if (index >= 0)
         {
             var existing = defaults[index];
             if (existing.preset == preset)
-
             {
                 if (existingPreset == preset)
                 {
@@ -78,7 +76,7 @@ internal static class DefaultPresetInstaller
         }
 
         defaults.Add(new DefaultPreset(filter, preset));
-        Preset.SetDefaultPresetsForType(presetType, defaults.ToArray());
+        Preset.SetDefaultPresetsForType(type, defaults.ToArray());
         Debug.Log($"[UnityPreset] Registered preset {preset.name} for {type.Name} with filter '{filter}'");
     }
 }
