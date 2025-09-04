@@ -54,7 +54,9 @@ internal static class DefaultPresetInstaller
         var importerType = typeof(T);
         var presetType = new PresetType(importerType);
         var defaults = new List<DefaultPreset>(Preset.GetDefaultPresetsForType(presetType));
-
+        var importerType = typeof(T);
+        var presetType = PresetType.GetPresetTypeFromType(importerType);
+        var defaults = new List<DefaultPreset>(Preset.GetDefaultPresetsForType(presetType));
         var index = defaults.FindIndex(d => d.filter == filter);
         if (index >= 0)
         {
