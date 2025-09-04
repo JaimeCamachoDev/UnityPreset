@@ -1,19 +1,32 @@
 # Unity Preset Toolkit
 
-Este paquete contiene Presets reutilizables para proyectos de Unity.
+Paquete con Presets y script de instalación automática para acelerar la importación de assets.
 
-## Presets de Textura
+## Presets incluidos
 
-- **TI_UI_Sprite.preset**
-  - Tipo de textura: Sprite (2D and UI)
-  - sRGB activado
-  - Alfa como transparencia activado
-  - MipMaps desactivados
-  - Compresión: Alta calidad
+### Texturas
+- **TI_Albedo**: textura estándar con sRGB y mipmaps.
+- **TI_Normal**: mapa de normales con sRGB desactivado.
+- **TI_Lightmap**: lightmap en espacio lineal sin mipmaps.
 
-### Uso
+### Modelos FBX
+- **MI_FBX_Static**: desactiva la importación de animaciones.
+- **MI_FBX_Animated**: activa la importación de animaciones.
 
-1. Importa este paquete en tu proyecto.
-2. Abre **Project Settings > Preset Manager**.
-3. Añade una entrada para `TextureImporter` con el filtro `path:Assets/Art/UI/**` y asigna el preset `TI_UI_Sprite`.
-4. Las texturas que coincidan con el filtro usarán automáticamente los valores del preset.
+## Instalación automática
+Al importar el paquete, el script `DefaultPresetInstaller` añade las siguientes entradas al Preset Manager:
+
+| Tipo | Filtro | Preset |
+| --- | --- | --- |
+| `TextureImporter` | *(sin filtro)* | TI_Albedo |
+| `TextureImporter` | `name:*_N*` | TI_Normal |
+| `TextureImporter` | `path:*/Lightmaps/*` | TI_Lightmap |
+| `ModelImporter` | `label:static` | MI_FBX_Static |
+| `ModelImporter` | `label:animated` | MI_FBX_Animated |
+
+Puedes modificar los filtros desde **Project Settings > Preset Manager** según tu organización de assets.
+
+## Uso
+1. Importa el paquete.
+2. Los presets se registran automáticamente. Revisa el Preset Manager si deseas cambiar filtros o prioridades.
+3. Etiqueta tus modelos con `static` o `animated` y usa sufijos como `_N` para mapas de normales para que se apliquen los presets correctos.
