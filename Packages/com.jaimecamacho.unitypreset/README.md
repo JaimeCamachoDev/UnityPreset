@@ -5,24 +5,22 @@ Paquete con Presets y script de instalación automática para acelerar la import
 ## Presets incluidos
 
 ### Texturas
-- **TI_Albedo**: textura estándar con sRGB y mipmaps.
-- **TI_Normal**: mapa de normales con sRGB desactivado.
-- **TI_Lightmap**: lightmap en espacio lineal sin mipmaps.
+- **VZ_Textures**: ajustes generales para texturas.
+- **VZ_Normal**: configuración para mapas de normales.
 
 ### Modelos FBX
-- **MI_FBX_Static**: desactiva la importación de animaciones.
-- **MI_FBX_Animated**: activa la importación de animaciones.
+- **VZ_FBX_Static**: desactiva la importación de animaciones.
+- **VZ_FBX_Animated**: activa la importación de animaciones.
 
 ## Instalación automática
 Al importar el paquete, el script `DefaultPresetInstaller` añade las siguientes entradas al Preset Manager:
 
 | Tipo | Filtro | Preset |
 | --- | --- | --- |
-| `TextureImporter` | *(sin filtro)* | TI_Albedo |
-| `TextureImporter` | `name:*_N*` | TI_Normal |
-| `TextureImporter` | `path:*/Lightmaps/*` | TI_Lightmap |
-| `ModelImporter` | `label:static` | MI_FBX_Static |
-| `ModelImporter` | `label:animated` | MI_FBX_Animated |
+| `TextureImporter` | `glob:"2-Art/1-3D/**/*"` | VZ_Textures |
+| `TextureImporter` | `glob:"*_Normal.*"` | VZ_Normal |
+| `ModelImporter` | `glob:"2-Art/1-3D/**/*"` | VZ_FBX_Static |
+| `ModelImporter` | `glob:"2-Art/1-3D/**/*"` | VZ_FBX_Animated |
 
 Puedes modificar los filtros desde **Project Settings > Preset Manager** según tu organización de assets.
 
