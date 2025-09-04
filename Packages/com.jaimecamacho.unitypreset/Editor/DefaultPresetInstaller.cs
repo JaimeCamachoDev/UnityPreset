@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.Presets;
 using UnityEngine;
 
+
 [InitializeOnLoad]
 internal static class DefaultPresetInstaller
 {
@@ -23,7 +24,6 @@ internal static class DefaultPresetInstaller
         RegisterModelPresets();
         Debug.Log("[UnityPreset] Default presets installed from menu");
     }
-
     static void RegisterTexturePresets()
     {
         AddPreset<TextureImporter>("Packages/com.jaimecamacho.unitypreset/Presets/Importers/Textures/TI_Albedo.preset", "");
