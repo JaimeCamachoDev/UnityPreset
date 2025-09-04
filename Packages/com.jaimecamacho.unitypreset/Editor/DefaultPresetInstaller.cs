@@ -13,6 +13,13 @@ internal static class DefaultPresetInstaller
         RegisterModelPresets();
     }
 
+    [MenuItem("Tools/JaimeCamachoDev/Presets/Install Default Presets")]
+    [MenuItem("Assets/JaimeCamachoDev/Presets/Install Default Presets")]
+    static void InstallFromMenu()
+    {
+        RegisterTexturePresets();
+        RegisterModelPresets();
+    }
     static void RegisterTexturePresets()
     {
         AddPreset<TextureImporter>("Packages/com.jaimecamacho.unitypreset/Presets/Importers/Textures/TI_Albedo.preset", "");
