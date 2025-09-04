@@ -8,7 +8,7 @@
       "url": "https://registry.npmjs.org"
     },
     "com.jaimecamacho.unityfolders": {
-      "version": "1.0.4",
+      "version": "1.1.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -44,9 +44,18 @@
     },
     "com.unity.ext.nunit": {
       "version": "2.0.5",
-      "depth": 4,
+      "depth": 2,
       "source": "registry",
       "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.ide.visualstudio": {
+      "version": "2.0.23",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.test-framework": "1.1.9"
+      },
       "url": "https://packages.unity.com"
     },
     "com.unity.mathematics": {
@@ -124,7 +133,7 @@
     },
     "com.unity.test-framework": {
       "version": "1.4.6",
-      "depth": 3,
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.ext.nunit": "2.0.3",
@@ -152,15 +161,21 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
+    "com.unity.modules.accessibility": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
+    },
     "com.unity.modules.imgui": {
       "version": "1.0.0",
-      "depth": 3,
+      "depth": 2,
       "source": "builtin",
       "dependencies": {}
     },
     "com.unity.modules.jsonserialize": {
       "version": "1.0.0",
-      "depth": 2,
+      "depth": 1,
       "source": "builtin",
       "dependencies": {}
     },
@@ -179,6 +194,21 @@
     "com.unity.modules.ui": {
       "version": "1.0.0",
       "depth": 3,
+      "source": "builtin",
+      "dependencies": {}
+    },
+    "com.unity.modules.unityanalytics": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.modules.unitywebrequest": "1.0.0",
+        "com.unity.modules.jsonserialize": "1.0.0"
+      }
+    },
+    "com.unity.modules.unitywebrequest": {
+      "version": "1.0.0",
+      "depth": 1,
       "source": "builtin",
       "dependencies": {}
     }
