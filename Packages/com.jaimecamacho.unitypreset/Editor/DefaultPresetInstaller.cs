@@ -11,6 +11,7 @@ internal static class DefaultPresetInstaller
     {
         RegisterTexturePresets();
         RegisterModelPresets();
+        Debug.Log("[UnityPreset] Default presets installed on load");
     }
 
     [MenuItem("Tools/JaimeCamachoDev/Presets/Install Default Presets")]
@@ -19,6 +20,7 @@ internal static class DefaultPresetInstaller
     {
         RegisterTexturePresets();
         RegisterModelPresets();
+        Debug.Log("[UnityPreset] Default presets installed from menu");
     }
     static void RegisterTexturePresets()
     {
@@ -29,7 +31,7 @@ internal static class DefaultPresetInstaller
 
     static void RegisterModelPresets()
     {
-        AddPreset<ModelImporter>("Packages/com.jaimecamacho.unitypreset/Presets/Importers/Models/MI_FBX_Static.preset", "label:static");
+        AddPreset<ModelImporter>("Packages/com.jaimecamacho.unitypreset/Presets/Importers/Models/MI_FBX_Static.preset", "");
         AddPreset<ModelImporter>("Packages/com.jaimecamacho.unitypreset/Presets/Importers/Models/MI_FBX_Animated.preset", "label:animated");
     }
 
@@ -37,17 +39,26 @@ internal static class DefaultPresetInstaller
     {
         var preset = AssetDatabase.LoadAssetAtPath<Preset>(presetPath);
         if (preset == null)
+        {
+            Debug.LogWarning($"[UnityPreset] Preset not found at {presetPath}");
             return;
+        }
 
         var type = typeof(T);
-        var presetManagerType = typeof(Preset).Assembly.GetType("UnityEditor.PresetManager");
+        var presetManagerType = typeof(Preset).Assembly.GetType("UnityEditor.Presets.PresetManager");
         if (presetManagerType == null)
+        {
+            Debug.LogWarning("[UnityPreset] PresetManager type not found");
             return;
+        }
 
         var getDefaults = presetManagerType.GetMethod("GetDefaultPresetsForType", BindingFlags.Static | BindingFlags.Public);
         var addDefault = presetManagerType.GetMethod("AddDefaultPreset", BindingFlags.Static | BindingFlags.Public);
         if (getDefaults == null || addDefault == null)
+        {
+            Debug.LogWarning("[UnityPreset] PresetManager methods not found");
             return;
+        }
 
         var defaults = (IEnumerable)getDefaults.Invoke(null, new object[] { type });
         foreach (var entry in defaults)
@@ -61,9 +72,13 @@ internal static class DefaultPresetInstaller
             var existingPreset = presetField.GetValue(entry) as Preset;
             var existingFilter = filterField.GetValue(entry) as string;
             if (existingPreset == preset && existingFilter == filter)
+            {
+                Debug.Log($"[UnityPreset] Preset {preset.name} already registered for {type.Name} with filter '{filter}'");
                 return;
+            }
         }
 
         addDefault.Invoke(null, new object[] { type, filter, preset });
+        Debug.Log($"[UnityPreset] Registered preset {preset.name} for {type.Name} with filter '{filter}'");
     }
 }
