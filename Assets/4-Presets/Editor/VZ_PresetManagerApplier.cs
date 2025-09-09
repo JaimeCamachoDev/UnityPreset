@@ -9,7 +9,7 @@ public static class VZ_PresetManagerApplier
     private static void ApplyPresetManagerPresets()
     {
         // Fetch default presets for ModelImporter from Preset Manager
-        var defaults = Preset.GetDefaultPresetsForType(typeof(ModelImporter));
+        var defaults = Preset.GetDefaultPresetsForType(new PresetType(typeof(ModelImporter)));
         if (defaults == null || defaults.Length == 0)
         {
             EditorUtility.DisplayDialog("VZ Presets", "No default presets found for ModelImporter.", "OK");
@@ -25,7 +25,7 @@ public static class VZ_PresetManagerApplier
 
             foreach (var def in defaults)
             {
-                if (def == null || def.preset == null) continue;
+                if (def.preset == null) continue;
                 string folder = ExtractPathFromFilter(def.filter);
                 if (string.IsNullOrEmpty(folder)) continue;
 
