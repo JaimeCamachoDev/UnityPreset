@@ -1,0 +1,4 @@
+glob:"*Anim.*"				-> VZ_FBX_Animated
+glob:"*Geo.*"				-> VZ_FBX_Static
+glob:"2-Art/1-3D/**/*"		-> VZ_Textures
+glob:"*_Normal.*"			-> VZ_Normal
