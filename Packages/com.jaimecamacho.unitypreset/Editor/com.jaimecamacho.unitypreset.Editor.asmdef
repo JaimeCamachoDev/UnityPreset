@@ -1,5 +1,19 @@
 {
-  "name": "com.jaimecamacho.unitypreset.Editor",
-  "references": ["com.jaimecamacho.unitypreset.Runtime"],
-  "includePlatforms": ["Editor"]
+    "name": "com.jaimecamacho.unitypreset.Editor",
+    "rootNamespace": "",
+    "references": [
+        "com.jaimecamacho.unitypreset.Runtime"
+    ],
+    "includePlatforms": [
+        "Android",
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
