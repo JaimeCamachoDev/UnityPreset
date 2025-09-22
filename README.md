@@ -1,33 +1,22 @@
 <header>
 
-![Banner](https://github.com/user-attachments/assets/5b933a56-0ece-452a-99c0-1a641485a6b9)
+<img width="629" height="341" alt="image" src="https://github.com/user-attachments/assets/e3a901db-12f2-4c94-a371-15b7757a7203" />
 
 # **UnityPreset**
 
 _**Presets personalizados para Unity**_
 
+## FBX Importer
+- glob:"*Anim.*"
+- glob:"*Geo.*"
 
-</header>
-   
-<footer>
-   
-## Después de crear el repositorio desde la plantilla, asegúrate de revisar lo siguiente:
+## Texture Importer
+- glob:"2-Art/1-3D/**/*"
+- glob:"*_Normal.*"
+- glob:"*_MetalSmooth.*"
+- glob:"*_AO.*"
 
 ### 📸 Social Preview
 - [ ] Sube una imagen `preview.png` personalizada en `Settings → Social Preview`.
-
-### ⚙️ Repository Features
-Desactiva funciones que no necesitas en `Settings → Features`:
-
-- [ ] Desactivar **Projects**
-- [ ] Desactivar **Wiki**
-- [ ] Desactivar **Packages**
-- [ ] Desactivar **Environments** (Deployments)
-- [ ] Confirmar que **Releases** sigue activado ✅
-
-### 🎨 Personalización visual
-- [ ] Cambiar imagen del banner de portada.
-- [ ] Dejar Topics necesarios.
-
 
 </footer>
