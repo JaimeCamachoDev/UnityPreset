@@ -16,6 +16,12 @@ PresetManager:
     - m_Preset: {fileID: 2655988077585873504, guid: 3753e3a5bf7247c2857f6d5029f10e6a, type: 2}
       m_Filter: glob:"*_Normal.*"
       m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 2009b54e9faafac489b30918147e38af, type: 2}
+      m_Filter: glob:"*_MetalSmooth.*"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 3d3916fcc1cb9b048b1f36b71d661e12, type: 2}
+      m_Filter: glob:"*_AO.*"
+      m_Disabled: 0
   - first:
       m_NativeTypeID: 1041
       m_ManagedTypePPtr: {fileID: 0}
