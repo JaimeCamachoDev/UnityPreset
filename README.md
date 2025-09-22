@@ -19,11 +19,4 @@ _**Presets personalizados para Unity**_
 ### 📸 Social Preview
 - [ ] Sube una imagen `preview.png` personalizada en `Settings → Social Preview`.
 
-- [ ] Confirmar que **Releases** sigue activado ✅
-
-- [ ] Cambiar imagen del banner de portada.
-
-
-
-
 </footer>
