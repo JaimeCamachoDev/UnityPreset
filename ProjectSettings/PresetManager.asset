@@ -6,6 +6,20 @@ PresetManager:
   serializedVersion: 2
   m_DefaultPresets:
   - first:
+      m_NativeTypeID: 1020
+      m_ManagedTypePPtr: {fileID: 0}
+      m_ManagedTypeFallback: 
+    second:
+    - m_Preset: {fileID: 2655988077585873504, guid: 7682f43ccb93dde4ab6b6464588123f6, type: 2}
+      m_Filter: glob:"*_VOX.*"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 0c551bba19618044c9efb02ce108398b, type: 2}
+      m_Filter: glob:"*_SFX.*"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: c01af04eb177c554094c2f3d1bf4955f, type: 2}
+      m_Filter: glob:"*_OST.*"
+      m_Disabled: 0
+  - first:
       m_NativeTypeID: 1006
       m_ManagedTypePPtr: {fileID: 0}
       m_ManagedTypeFallback: 
@@ -13,14 +27,17 @@ PresetManager:
     - m_Preset: {fileID: 2655988077585873505, guid: c595e8e9664944cda5777a7dcae15c7f, type: 2}
       m_Filter: glob:"2-Art/1-3D/**/*"
       m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873505, guid: c595e8e9664944cda5777a7dcae15c7f, type: 2}
+      m_Filter: glob:"*_ColorAlpha.*"
+      m_Disabled: 0
     - m_Preset: {fileID: 2655988077585873504, guid: 3753e3a5bf7247c2857f6d5029f10e6a, type: 2}
       m_Filter: glob:"*_Normal.*"
       m_Disabled: 0
     - m_Preset: {fileID: 2655988077585873504, guid: 2009b54e9faafac489b30918147e38af, type: 2}
-      m_Filter: glob:"*_MetalSmooth.*"
+      m_Filter: glob:"*_MaskMap.*"
       m_Disabled: 0
-    - m_Preset: {fileID: 2655988077585873504, guid: 3d3916fcc1cb9b048b1f36b71d661e12, type: 2}
-      m_Filter: glob:"*_AO.*"
+    - m_Preset: {fileID: 2655988077585873504, guid: 2009b54e9faafac489b30918147e38af, type: 2}
+      m_Filter: glob:"*_HDRP.*"
       m_Disabled: 0
   - first:
       m_NativeTypeID: 1041
