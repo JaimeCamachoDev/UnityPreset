@@ -1,13 +1,27 @@
 {
-  "author": "Jaime Camacho",
-  "displayName": "UnityPreset",
-  "keywords": [
-    "unity"
-  ],
-  "license": "MIT",
   "name": "com.jaimecamachodev.unitypreset",
+  "version": "1.0.0",
+  "displayName": "UnityPreset",
+  "description": "Creador de Presets",
   "unity": "6000.0",
   "unityRelease": "0f1",
-  "version": "1.0.0",
-  "description": "Creador de Presets"
+  "license": "MIT",
+  "documentationUrl": "https://github.com/JaimeCamachoDev/UnityPreset",
+  "changelogUrl": "https://github.com/JaimeCamachoDev/UnityPreset/releases",
+  "licensesUrl": "https://github.com/JaimeCamachoDev/UnityPreset/blob/main/LICENSE",
+  "keywords": [
+    "unity",
+    "preset",
+    "editor",
+    "importer"
+  ],
+  "author": {
+    "name": "JaimeCamachoDev",
+    "url": "https://github.com/JaimeCamachoDev",
+    "email": "jaime.camacho.dev@gmail.com"
+  },
+  "repository": {
+    "url": "https://github.com/JaimeCamachoDev/UnityPreset.git",
+    "type": "git"
+  }
 }

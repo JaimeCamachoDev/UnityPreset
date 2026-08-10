@@ -1,11 +1,29 @@
 name: Publish to npmjs
 
+# Fully automated: on every published Release this workflow packs AND signs the
+# Unity package with the Unity Package Manager CLI (using a service account), then
+# publishes the signed tarball to npm via OIDC (no tokens).
+#
+# Signing produces the same `package/.attestation.p7m` you get when exporting from
+# the Unity Editor, so you never have to export or attach anything by hand.
+#
+# One-time setup (repository secrets: Settings -> Secrets and variables -> Actions):
+#   - UPM_SERVICE_ACCOUNT_KEY_ID      Service account key id     (Unity Cloud)
+#   - UPM_SERVICE_ACCOUNT_KEY_SECRET  Service account key secret (Unity Cloud)
+#   - UNITY_ORGANIZATION_ID           Unity organization id
+# The service account needs the "Package Manager Package Signer" role.
+# npm side needs a Trusted Publisher configured for this package + publish.yml.
+#
+# To release: GitHub -> Releases -> Draft a new release -> tag vX.Y.Z -> Publish.
+# The published version is taken from the tag.
+
 on:
   release:
-    types: [created]
+    types: [published]
 
 permissions:
-  contents: write  # Requerido para poder hacer commit
+  contents: read
+  id-token: write   # OIDC trusted publishing (no tokens)
 
 jobs:
   publish:
@@ -13,37 +31,95 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
-          node-version: 18
+          node-version: 24
           registry-url: 'https://registry.npmjs.org/'
 
-      - name: Set package path
+      - name: Detect package folder
         run: |
-          repo_name=${GITHUB_REPOSITORY##*/}
-          repo_lower=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')
-          echo "PACKAGE_DIR=Packages/com.jaimecamachodev.$repo_lower" >> $GITHUB_ENV
+          pkg_json=$(find Packages -mindepth 2 -maxdepth 2 -name package.json | head -n1)
+          if [ -z "$pkg_json" ]; then
+            echo "::error::No package.json found under Packages/*/"
+            exit 1
+          fi
+          echo "PACKAGE_DIR=$(dirname "$pkg_json")" >> "$GITHUB_ENV"
+          echo "Detected package dir: $(dirname "$pkg_json")"
 
-      - name: Extract version from tag
-        id: version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
-
-      - name: Update version in package.json
+      - name: Set version from the release tag
         run: |
-          jq --arg v "$VERSION" '.version = $v' "$PACKAGE_DIR/package.json" > tmp.json && mv tmp.json "$PACKAGE_DIR/package.json"
+          VERSION="${GITHUB_REF#refs/tags/}"   # strip refs/tags/
+          VERSION="${VERSION#v}"               # strip a leading v (v1.5.5 -> 1.5.5)
+          jq --arg v "$VERSION" '.version = $v' "$PACKAGE_DIR/package.json" > tmp.json
+          mv tmp.json "$PACKAGE_DIR/package.json"
+          echo "Version set to $VERSION"
 
-      # Paso de commit y push eliminado
-
-      - name: Sync README into package
+      - name: Install Unity Package Manager CLI
         run: |
-          mkdir -p "$PACKAGE_DIR"
-          cp README.md "$PACKAGE_DIR/README.md"
+          curl -fsSL https://cdn.packages.unity.com/upm-cli/install.sh | bash
+          echo "$HOME/.upm/bin" >> "$GITHUB_PATH"
 
-      - name: Publish package to npm
-        run: npm publish
-        working-directory: ${{ env.PACKAGE_DIR }}
+      # Diagnostic only — prints lengths and flags stray whitespace/newlines without
+      # ever printing the actual secret values, so a bad copy-paste is visible in the
+      # log instead of surfacing as Unity's generic "Invalid service account credentials".
+      - name: Sanity-check UPM credentials (no secret values printed)
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_PACKAGE }}
+          UPM_SERVICE_ACCOUNT_KEY_ID: ${{ secrets.UPM_SERVICE_ACCOUNT_KEY_ID }}
+          UPM_SERVICE_ACCOUNT_KEY_SECRET: ${{ secrets.UPM_SERVICE_ACCOUNT_KEY_SECRET }}
+          UNITY_ORGANIZATION_ID: ${{ secrets.UNITY_ORGANIZATION_ID }}
+        run: |
+          bad=0
+          check() {
+            name="$1"
+            value="$2"
+            if [ -z "$value" ]; then
+              echo "::error::$name is empty or not set"
+              bad=1
+              return
+            fi
+            len=${#value}
+            echo "$name: length=$len"
+            stripped="$(printf '%s' "$value" | tr -d '[:space:]')"
+            if [ "${#stripped}" -ne "$len" ]; then
+              echo "::error::$name contains whitespace/newline characters (likely a copy-paste artifact) — re-enter it without any surrounding spaces or trailing newline."
+              bad=1
+            fi
+          }
+          check "UPM_SERVICE_ACCOUNT_KEY_ID" "$UPM_SERVICE_ACCOUNT_KEY_ID"
+          check "UPM_SERVICE_ACCOUNT_KEY_SECRET" "$UPM_SERVICE_ACCOUNT_KEY_SECRET"
+          check "UNITY_ORGANIZATION_ID" "$UNITY_ORGANIZATION_ID"
+          exit $bad
+
+      - name: Pack and sign the package
+        env:
+          UPM_SERVICE_ACCOUNT_KEY_ID: ${{ secrets.UPM_SERVICE_ACCOUNT_KEY_ID }}
+          UPM_SERVICE_ACCOUNT_KEY_SECRET: ${{ secrets.UPM_SERVICE_ACCOUNT_KEY_SECRET }}
+        run: |
+          mkdir -p out
+          upm pack "$PACKAGE_DIR" --organization-id "${{ secrets.UNITY_ORGANIZATION_ID }}" --destination ./out
+          ls -l out/*.tgz
+
+      - name: Verify the Unity signature is present
+        run: |
+          tgz=$(ls out/*.tgz | head -n1)
+          if tar -tzf "$tgz" 2>/dev/null | grep -q 'package/.attestation.p7m'; then
+            echo "Signed OK: $tgz"
+            # Absolute path so npm treats it as a local tarball (not a github user/repo shorthand).
+            echo "TGZ=$(pwd)/$tgz" >> "$GITHUB_ENV"
+          else
+            echo "::error::Packing produced no .attestation.p7m — signing did not happen. Check the service account secrets/role."
+            exit 1
+          fi
+
+      - name: Publish signed tarball to npm
+        run: |
+          for i in 1 2 3; do
+            npm publish "$TGZ" --access public && exit 0
+            echo "Intento $i de publicación fallido (posible fallo transitorio de OIDC en npm). Reintentando en 20s..."
+            sleep 20
+          done
+          echo "::error::npm publish falló tras 3 intentos"
+          exit 1
