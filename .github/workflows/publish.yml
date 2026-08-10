@@ -25,7 +25,7 @@ jobs:
         run: |
           repo_name=${GITHUB_REPOSITORY##*/}
           repo_lower=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')
-          echo "PACKAGE_DIR=Packages/com.jaimecamacho.$repo_lower" >> $GITHUB_ENV
+          echo "PACKAGE_DIR=Packages/com.jaimecamachodev.$repo_lower" >> $GITHUB_ENV
 
       - name: Extract version from tag
         id: version
