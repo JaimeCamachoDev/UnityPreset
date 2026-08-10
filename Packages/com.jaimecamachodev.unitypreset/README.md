@@ -1,6 +1,6 @@
 # Unity Preset Toolkit
 
-Paquete con Presets y script de instalación automática para acelerar la importación de assets.
+Paquete con Presets y una herramienta de instalación para acelerar la importación de assets.
 
 ## Presets incluidos
 
@@ -12,19 +12,23 @@ Paquete con Presets y script de instalación automática para acelerar la import
 - **VZ_FBX_Static**: desactiva la importación de animaciones.
 - **VZ_FBX_Animated**: activa la importación de animaciones.
 
-## Instalación automática
-Al importar el paquete, el script `DefaultPresetInstaller` añade las siguientes entradas al Preset Manager:
+## Instalación de los presets
+El paquete no modifica el Preset Manager automáticamente al importarlo (así no pisa nada en proyectos que ya tengan sus propios presets configurados). Para registrar los presets del paquete como defaults del proyecto, ve a:
+
+**Tools → JaimeCamachoDev → Presets → Install Presets**
+
+Esto añade las siguientes entradas al Preset Manager, conservando cualquier otra entrada que el proyecto ya tuviera para otros tipos:
 
 | Tipo | Filtro | Preset |
 | --- | --- | --- |
 | `TextureImporter` | `glob:"2-Art/1-3D/**/*"` | VZ_Textures |
 | `TextureImporter` | `glob:"*_Normal.*"` | VZ_Normal |
-| `ModelImporter` | `glob:"2-Art/1-3D/**/*"` | VZ_FBX_Static |
-| `ModelImporter` | `glob:"2-Art/1-3D/**/*"` | VZ_FBX_Animated |
+| `ModelImporter` | `glob:"*Geo.*"` | VZ_FBX_Static |
+| `ModelImporter` | `glob:"*Anim.*"` | VZ_FBX_Animated |
 
-Puedes modificar los filtros desde **Project Settings > Preset Manager** según tu organización de assets.
+Puedes modificar los filtros o el orden desde **Project Settings > Preset Manager** una vez instalados. El botón es idempotente: puedes volver a pulsarlo (por ejemplo tras actualizar el paquete) sin generar entradas duplicadas.
 
 ## Uso
 1. Importa el paquete.
-2. Los presets se registran automáticamente. Revisa el Preset Manager si deseas cambiar filtros o prioridades.
-3. Etiqueta tus modelos con `static` o `animated` y usa sufijos como `_N` para mapas de normales para que se apliquen los presets correctos.
+2. Ejecuta **Tools → JaimeCamachoDev → Presets → Install Presets**.
+3. Etiqueta tus modelos con `Geo`/`Anim` en el nombre y usa sufijos como `_Normal` para mapas de normales, según los filtros de la tabla anterior.
