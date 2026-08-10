@@ -1,8 +1,8 @@
 {
-    "name": "com.jaimecamacho.unitypreset.Editor",
+    "name": "com.jaimecamachodev.unitypreset.Editor",
     "rootNamespace": "",
     "references": [
-        "com.jaimecamacho.unitypreset.Runtime"
+        "com.jaimecamachodev.unitypreset.Runtime"
     ],
     "includePlatforms": [
         "Android",
