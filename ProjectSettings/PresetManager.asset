@@ -45,6 +45,9 @@ PresetManager:
       m_ManagedTypeFallback: 
     second:
     - m_Preset: {fileID: 2655988077585873508, guid: f23776e5374943969c6eb98ffdbcc5d8, type: 2}
+      m_Filter: glob:"*TPose*"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873508, guid: f23776e5374943969c6eb98ffdbcc5d8, type: 2}
       m_Filter: glob:"*Anim.*"
       m_Disabled: 0
     - m_Preset: {fileID: 2655988077585873507, guid: 4b171b4e11bc4377bd10ea49b1379e38, type: 2}
