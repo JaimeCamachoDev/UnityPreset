@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Presets;
@@ -11,20 +12,34 @@ namespace JaimeCamachoDev.UnityPreset.Editor
     /// </summary>
     internal static class PresetInstaller
     {
+        // Debe reflejar exactamente las entradas de este proyecto en ProjectSettings/PresetManager.asset.
+        // Un mismo preset puede repetirse con varios filtros (p. ej. VZ_Textures cubre dos globs distintos).
         private static readonly (string relativePath, string filter)[] k_Defaults =
         {
+            // Audio
+            ("Presets/Importers/Audio/VZ_Audio_VOX.preset", "glob:\"*_VOX.*\""),
+            ("Presets/Importers/Audio/VZ_Audio_SFX.preset", "glob:\"*_SFX.*\""),
+            ("Presets/Importers/Audio/VZ_Audio_OST.preset", "glob:\"*_OST.*\""),
+
+            // Texturas
+            ("Presets/Importers/Textures/VZ_Textures.preset", "glob:\"2-Art/1-3D/**/*\""),
+            ("Presets/Importers/Textures/VZ_Textures.preset", "glob:\"*_ColorAlpha.*\""),
+            ("Presets/Importers/Textures/VZ_Normal.preset", "glob:\"*_Normal.*\""),
+            ("Presets/Importers/Textures/VZ_MaskMap.preset", "glob:\"*_MaskMap.*\""),
+            ("Presets/Importers/Textures/VZ_MaskMap.preset", "glob:\"*_HDRP.*\""),
+
+            // Modelos FBX
+            ("Presets/Importers/Models/VZ_FBX_Animated.preset", "glob:\"*TPose*\""),
             ("Presets/Importers/Models/VZ_FBX_Animated.preset", "glob:\"*Anim.*\""),
             ("Presets/Importers/Models/VZ_FBX_Static.preset", "glob:\"*Geo.*\""),
-            ("Presets/Importers/Textures/VZ_Textures.preset", "glob:\"2-Art/1-3D/**/*\""),
-            ("Presets/Importers/Textures/VZ_Normal.preset", "glob:\"*_Normal.*\""),
         };
 
         [MenuItem("Tools/JaimeCamachoDev/Presets/Install Presets")]
         private static void InstallPresets()
         {
             string packageRoot = GetPackageRootPath();
-            int installed = 0;
 
+            var entries = new List<(Preset preset, string filter)>();
             foreach (var (relativePath, filter) in k_Defaults)
             {
                 string presetPath = $"{packageRoot}/{relativePath}";
@@ -35,20 +50,32 @@ namespace JaimeCamachoDev.UnityPreset.Editor
                     continue;
                 }
 
-                var type = preset.GetPresetType();
+                entries.Add((preset, filter));
+            }
+
+            // Primero se limpian todas las entradas previas de estos presets (idempotencia al reinstalar).
+            // Se hace en un paso aparte porque un mismo preset puede tener varios filtros: si se limpiara
+            // preset a preset justo antes de añadirlo, la segunda entrada de ese preset borraría la primera.
+            foreach (var preset in entries.Select(e => e.preset).Distinct())
+                Preset.RemoveFromDefault(preset);
+
+            int installed = 0;
+            foreach (var group in entries.GroupBy(e => e.preset.GetPresetType()))
+            {
+                var type = group.Key;
                 if (!type.IsValidDefault())
                 {
-                    Debug.LogWarning($"[UnityPreset] El preset '{preset.name}' no admite ser un preset por defecto.");
+                    Debug.LogWarning($"[UnityPreset] El tipo '{type.GetManagedTypeName()}' no admite presets por defecto.");
                     continue;
                 }
 
-                // Evita duplicados si el preset ya estaba instalado (p. ej. al reinstalar).
-                Preset.RemoveFromDefault(preset);
-
                 var defaults = Preset.GetDefaultPresetsForType(type).ToList();
-                defaults.Add(new DefaultPreset(filter, preset));
+                foreach (var (preset, filter) in group)
+                {
+                    defaults.Add(new DefaultPreset(filter, preset));
+                    installed++;
+                }
                 Preset.SetDefaultPresetsForType(type, defaults.ToArray());
-                installed++;
             }
 
             EditorUtility.DisplayDialog(
