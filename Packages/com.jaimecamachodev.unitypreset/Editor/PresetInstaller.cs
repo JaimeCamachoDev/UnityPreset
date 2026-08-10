@@ -1,6 +1,5 @@
 using System.Linq;
 using UnityEditor;
-using UnityEditor.PackageManager;
 using UnityEditor.Presets;
 using UnityEngine;
 
@@ -62,7 +61,7 @@ namespace JaimeCamachoDev.UnityPreset.Editor
 
         private static string GetPackageRootPath()
         {
-            var packageInfo = PackageInfo.FindForAssembly(typeof(PresetInstaller).Assembly);
+            var packageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(PresetInstaller).Assembly);
             return packageInfo != null ? packageInfo.assetPath : "Packages/com.jaimecamachodev.unitypreset";
         }
     }
