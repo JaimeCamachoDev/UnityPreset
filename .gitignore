@@ -1,40 +1,52 @@
-# Archivos de sistema operativo y editor
-Thumbs.db
-Desktop.ini
-.DS_Store
-*.swp
+# ===============================================================
+# .gitignore estándar para proyectos Unity - JaimeCamachoDev
+# ===============================================================
 
-# Carpetas generadas por Unity (no versionar)
-[Ll]ibrary/
-[Tt]emp/
-[Oo]bj/
-[Bb]uild/
-[Bb]uilds/
-[Ll]ogs/
-[Uu]ser[Ss]ettings/
-[Mm]emoryCaptures/
-[Rr]ecordings/
-UIElementsSchema/
+# --- Carpetas generadas por Unity (solo en la raíz del proyecto) ---
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+/[Pp]rofilerCaptures/
+/UIElementsSchema/
 
-# Archivos de Unity para sesiones/crash temporales
+# Asset meta data should only be ignored when the corresponding asset is also ignored
+!/[Aa]ssets/**/*.meta
+
+# Archivos temporales / crash de Unity
 /.utmp
 /mono_crash.*.json
+/[Aa]ssets/_Recovery/
+/[Aa]ssets/_Recovery.meta
+sysinfo.txt
+crashlytics-build.properties
+*.log
 
-# Ignorar proyecto Xcode generado (iOS)
+# Proyectos generados (iOS / Android)
 /Xcode/
+/[Aa]ssets/[Pp]lugins/[Aa]ndroid/gradleOut*
 
-# Archivos de configuración/plug-in de IDEs
+# Sistema operativo
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+
+# IDEs (Visual Studio, Rider, VS Code)
 .vs/
 .vscode/
 .idea/
-.gradle/
-
-# Archivos de solución/proyecto generados (Unity, VS, JetBrains, etc.)
-ExportedObj/
 .consulo/
+ExportedObj/
 *.csproj
 *.unityproj
 *.sln
+*.slnx
 *.suo
 *.tmp
 *.user
@@ -46,20 +58,19 @@ ExportedObj/
 *.mdb
 *.opendb
 *.VC.db
-
-# Metadatos generados por Unity (no necesarios en control de versiones)
 *.pidb.meta
 *.pdb.meta
 *.mdb.meta
+TempAssembly.dll
 
-# Reportes de crash de Unity
-sysinfo.txt
-crashlytics-build.properties
-
-# Artefactos de compilación (builds) - binarios resultantes
+# Builds y artefactos (súbelos como assets de una Release, no al repo)
 *.apk
 *.aab
-*.unitypackage
 *.app
 *.exe
 *_DoNotShip*
+
+# Copias de seguridad locales
+_Backup_*/
+*.bak
+*.orig
