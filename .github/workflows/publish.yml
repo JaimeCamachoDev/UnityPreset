@@ -14,6 +14,8 @@ name: Publish to npmjs
 # The service account needs the "Package Manager Package Signer" role.
 # npm side needs a Trusted Publisher configured for this package + publish.yml.
 #
+# If the repo has no Packages/<name>/package.json the workflow skips publishing.
+#
 # To release: GitHub -> Releases -> Draft a new release -> tag vX.Y.Z -> Publish.
 # The published version is taken from the tag.
 
@@ -41,15 +43,17 @@ jobs:
 
       - name: Detect package folder
         run: |
-          pkg_json=$(find Packages -mindepth 2 -maxdepth 2 -name package.json | head -n1)
+          pkg_json=$(find Packages -mindepth 2 -maxdepth 2 -name package.json 2>/dev/null | head -n1)
           if [ -z "$pkg_json" ]; then
-            echo "::error::No package.json found under Packages/*/"
-            exit 1
+            echo "::notice::No hay paquete UPM en Packages/*/ — no se publica nada."
+            echo "SKIP_PUBLISH=true" >> "$GITHUB_ENV"
+            exit 0
           fi
           echo "PACKAGE_DIR=$(dirname "$pkg_json")" >> "$GITHUB_ENV"
           echo "Detected package dir: $(dirname "$pkg_json")"
 
       - name: Set version from the release tag
+        if: env.SKIP_PUBLISH != 'true'
         run: |
           VERSION="${GITHUB_REF#refs/tags/}"   # strip refs/tags/
           VERSION="${VERSION#v}"               # strip a leading v (v1.5.5 -> 1.5.5)
@@ -57,7 +61,16 @@ jobs:
           mv tmp.json "$PACKAGE_DIR/package.json"
           echo "Version set to $VERSION"
 
+      - name: Sync README and LICENSE into the package
+        if: env.SKIP_PUBLISH != 'true'
+        run: |
+          # Solo se sobrescriben si ya existen en el paquete (tienen su .meta versionado)
+          for f in README.md LICENSE; do
+            if [ -f "$f" ] && [ -f "$PACKAGE_DIR/$f" ]; then cp "$f" "$PACKAGE_DIR/$f"; fi
+          done
+
       - name: Install Unity Package Manager CLI
+        if: env.SKIP_PUBLISH != 'true'
         run: |
           curl -fsSL https://cdn.packages.unity.com/upm-cli/install.sh | bash
           echo "$HOME/.upm/bin" >> "$GITHUB_PATH"
@@ -66,6 +79,7 @@ jobs:
       # ever printing the actual secret values, so a bad copy-paste is visible in the
       # log instead of surfacing as Unity's generic "Invalid service account credentials".
       - name: Sanity-check UPM credentials (no secret values printed)
+        if: env.SKIP_PUBLISH != 'true'
         env:
           UPM_SERVICE_ACCOUNT_KEY_ID: ${{ secrets.UPM_SERVICE_ACCOUNT_KEY_ID }}
           UPM_SERVICE_ACCOUNT_KEY_SECRET: ${{ secrets.UPM_SERVICE_ACCOUNT_KEY_SECRET }}
@@ -94,6 +108,7 @@ jobs:
           exit $bad
 
       - name: Pack and sign the package
+        if: env.SKIP_PUBLISH != 'true'
         env:
           UPM_SERVICE_ACCOUNT_KEY_ID: ${{ secrets.UPM_SERVICE_ACCOUNT_KEY_ID }}
           UPM_SERVICE_ACCOUNT_KEY_SECRET: ${{ secrets.UPM_SERVICE_ACCOUNT_KEY_SECRET }}
@@ -103,6 +118,7 @@ jobs:
           ls -l out/*.tgz
 
       - name: Verify the Unity signature is present
+        if: env.SKIP_PUBLISH != 'true'
         run: |
           tgz=$(ls out/*.tgz | head -n1)
           if tar -tzf "$tgz" 2>/dev/null | grep -q 'package/.attestation.p7m'; then
@@ -115,6 +131,7 @@ jobs:
           fi
 
       - name: Publish signed tarball to npm
+        if: env.SKIP_PUBLISH != 'true'
         run: |
           for i in 1 2 3; do
             npm publish "$TGZ" --access public && exit 0

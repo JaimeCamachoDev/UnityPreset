@@ -1,27 +1,27 @@
 {
   "name": "com.jaimecamachodev.unitypreset",
-  "version": "1.0.0",
+  "version": "1.0.15",
   "displayName": "UnityPreset",
-  "description": "Creador de Presets",
+  "description": "Creador y aplicador de Presets de importación para Unity (texturas, modelos, audio).",
   "unity": "6000.0",
   "unityRelease": "0f1",
   "license": "MIT",
-  "documentationUrl": "https://github.com/JaimeCamachoDev/UnityPreset",
-  "changelogUrl": "https://github.com/JaimeCamachoDev/UnityPreset/releases",
-  "licensesUrl": "https://github.com/JaimeCamachoDev/UnityPreset/blob/main/LICENSE",
-  "keywords": [
-    "unity",
-    "preset",
-    "editor",
-    "importer"
-  ],
   "author": {
     "name": "JaimeCamachoDev",
     "url": "https://github.com/JaimeCamachoDev",
     "email": "jaime.camacho.dev@gmail.com"
   },
   "repository": {
-    "url": "https://github.com/JaimeCamachoDev/UnityPreset.git",
-    "type": "git"
-  }
+    "type": "git",
+    "url": "git+https://github.com/JaimeCamachoDev/UnityPreset.git"
+  },
+  "documentationUrl": "https://github.com/JaimeCamachoDev/UnityPreset#readme",
+  "changelogUrl": "https://github.com/JaimeCamachoDev/UnityPreset/blob/main/Packages/com.jaimecamachodev.unitypreset/CHANGELOG.md",
+  "licensesUrl": "https://github.com/JaimeCamachoDev/UnityPreset/blob/main/LICENSE",
+  "keywords": [
+    "unity",
+    "editor",
+    "preset",
+    "importer"
+  ]
 }
