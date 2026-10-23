@@ -22,6 +22,8 @@ name: Publish to npmjs
 on:
   release:
     types: [published]
+  # Ejecución manual: empaqueta y firma para comprobar las credenciales, sin publicar en npm
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -53,7 +55,7 @@ jobs:
           echo "Detected package dir: $(dirname "$pkg_json")"
 
       - name: Set version from the release tag
-        if: env.SKIP_PUBLISH != 'true'
+        if: env.SKIP_PUBLISH != 'true' && github.event_name == 'release'
         run: |
           VERSION="${GITHUB_REF#refs/tags/}"   # strip refs/tags/
           VERSION="${VERSION#v}"               # strip a leading v (v1.5.5 -> 1.5.5)
@@ -131,7 +133,7 @@ jobs:
           fi
 
       - name: Publish signed tarball to npm
-        if: env.SKIP_PUBLISH != 'true'
+        if: env.SKIP_PUBLISH != 'true' && github.event_name == 'release'
         run: |
           for i in 1 2 3; do
             npm publish "$TGZ" --access public && exit 0
