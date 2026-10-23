@@ -132,6 +132,14 @@ jobs:
             exit 1
           fi
 
+      - name: Upload signed tarball (manual run)
+        if: env.SKIP_PUBLISH != 'true' && github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: signed-package
+          path: out/*.tgz
+          retention-days: 7
+
       - name: Publish signed tarball to npm
         if: env.SKIP_PUBLISH != 'true' && github.event_name == 'release'
         run: |
