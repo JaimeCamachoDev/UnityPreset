@@ -1,0 +1,3 @@
+# Línea base de unity-ref-check: problemas conocidos que no hacen fallar la revisión.
+# Formato: tipo<TAB>guid o ruta<TAB>fichero. Se regenera con --write-baseline.
+

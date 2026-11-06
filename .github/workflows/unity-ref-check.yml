@@ -1,0 +1,18 @@
+name: Revisión de referencias
+
+# Revisa .meta, GUID duplicados, referencias rotas y claves subidas por error sin abrir Unity.
+# Los problemas conocidos están en .github/unity-ref-check-baseline.txt; solo fallan los nuevos.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: JaimeCamachoDev/unity-ref-check@v1
