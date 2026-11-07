@@ -24,16 +24,10 @@
       ]
     },
     {
-      "name": "JaimeCamachoDevTest",
-      "url": "https://registry.npmjs.org",
-      "scopes": [
-        "com.jaimecamacho"
-      ]
-    },
-    {
       "name": "JaimeCamachoDev",
       "url": "https://registry.npmjs.org",
       "scopes": [
+        "com.jaimecamacho",
         "com.jaimecamachodev"
       ]
     }
